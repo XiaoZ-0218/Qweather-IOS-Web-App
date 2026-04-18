@@ -15,7 +15,7 @@
 
 <p align="center">
   <img src="screenshots/invite-code.png" width="280" alt="邀请码验证">
-  <img src="screenshots/home.webp" width="280" alt="主页面">
+  <img src="screenshots/home.jpg" width="280" alt="主页面">
   <img src="screenshots/add-to-homescreen.png" width="280" alt="添加到主屏幕">
 </p>
 
