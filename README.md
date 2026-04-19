@@ -15,8 +15,8 @@
 
 <p align="center">
   <img src="screenshots/invite-code.png" width="280" alt="邀请码验证">
-  <img src="screenshots/home.jpg" width="280" alt="主页面">
   <img src="screenshots/add-to-homescreen.png" width="280" alt="添加到主屏幕">
+  <img src="screenshots/home.jpg" width="280" alt="主页面">
 </p>
 
 ## 技术栈
@@ -210,4 +210,6 @@ server {
 
 ## License
 
-MIT
+本项目基于 [MIT License](LICENSE) 开源。
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
