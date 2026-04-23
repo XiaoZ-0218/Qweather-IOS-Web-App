@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Dict
 
 import requests
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_file
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -56,6 +56,32 @@ def index():
     html = INDEX_FILE.read_text(encoding='utf-8')
     html = html.replace('__INVITE_CODE__', INVITE_CODE)
     return html, 200, {'Content-Type': 'text/html; charset=utf-8'}
+
+
+@app.get('/icon-192.png')
+def app_icon():
+    return send_file(BASE_DIR / 'icon-192.png', mimetype='image/png')
+
+
+@app.get('/manifest.webmanifest')
+def manifest():
+    return jsonify({
+        'name': 'WeatherOS Aurora',
+        'short_name': 'WeatherOS',
+        'start_url': '/',
+        'scope': '/',
+        'display': 'standalone',
+        'background_color': '#081120',
+        'theme_color': '#081120',
+        'icons': [
+            {
+                'src': '/icon-192.png',
+                'sizes': '192x192',
+                'type': 'image/png',
+                'purpose': 'any maskable',
+            },
+        ],
+    }), 200, {'Content-Type': 'application/manifest+json; charset=utf-8'}
 
 
 @app.get('/api/health')

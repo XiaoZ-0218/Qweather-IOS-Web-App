@@ -5,12 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
   <meta name="theme-color" content="#09111f" id="theme-color">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="WeatherOS">
   <title>WeatherOS · Aurora Edition</title>
+  <link rel="manifest" href="/manifest.webmanifest">
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22b%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%252309111f%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%2523173f60%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22s%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%2523fde68a%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%2523fbbf24%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22c%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%25237dd3fc%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%2523c084fc%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2250%22%20r%3D%2248%22%20fill%3D%22url%28%2523b%29%22%2F%3E%3Ccircle%20cx%3D%2238%22%20cy%3D%2242%22%20r%3D%2214%22%20fill%3D%22url%28%2523s%29%22%2F%3E%3Cpath%20d%3D%22M30%2058Q30%2046%2042%2046Q46%2038%2056%2042Q66%2038%2068%2048Q78%2048%2078%2058Q78%2068%2068%2068L38%2068Q30%2068%2030%2058Z%22%20fill%3D%22url%28%2523c%29%22%20opacity%3D%22.9%22%2F%3E%3C%2Fsvg%3E">
-  <link rel="apple-touch-icon" href="icon-192.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     :root {
@@ -35,9 +37,11 @@
       --shadow: 0 20px 60px rgba(0,0,0,.25);
     }
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    button, input { touch-action: manipulation; }
     html, body {
       margin: 0;
       width: 100%;
+      height: 100%;
       min-height: 100%;
       color: var(--text-1);
       background: #050b16;
@@ -358,6 +362,149 @@
     .forecast30-legend { display: flex; gap: 16px; justify-content: center; margin-top: 8px; font-size: 12px; color: var(--text-3); flex-wrap: wrap; }
     .forecast30-legend span { display: inline-flex; align-items: center; gap: 4px; }
     .forecast30-legend i { display: inline-block; border-radius: 2px; }
+    .visual-card { padding-bottom: 16px; }
+    .visual-card .card-head { margin-bottom: 12px; }
+    .visual-stage {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(122px, .8fr);
+      gap: 12px;
+      align-items: stretch;
+    }
+    .skyline-wrap {
+      position: relative;
+      min-height: 172px;
+      border-radius: 20px;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.025)),
+        rgba(255,255,255,.045);
+      border: 1px solid rgba(255,255,255,.07);
+    }
+    .skyline-wrap canvas {
+      width: 100%;
+      height: 100%;
+      min-height: 172px;
+      display: block;
+    }
+    .skyline-copy {
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 12px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 10px;
+      pointer-events: none;
+    }
+    .visual-summary {
+      color: var(--text-1);
+      font-size: 15px;
+      font-weight: 800;
+      line-height: 1.25;
+      text-shadow: 0 4px 16px rgba(0,0,0,.25);
+    }
+    .visual-sub {
+      margin-top: 4px;
+      color: var(--text-3);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.25;
+    }
+    .visual-temp-badge {
+      flex: 0 0 auto;
+      min-width: 62px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      color: #07101f;
+      background: linear-gradient(135deg, rgba(224,242,254,.94), rgba(253,230,138,.92));
+      text-align: center;
+      font-size: 13px;
+      font-weight: 900;
+      box-shadow: 0 12px 28px rgba(0,0,0,.18);
+    }
+    .visual-metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .visual-metric {
+      min-height: 81px;
+      padding: 10px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.055);
+      border: 1px solid rgba(255,255,255,.07);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+    .metric-ring {
+      --p: 0;
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      background:
+        radial-gradient(circle at center, rgba(10,18,36,.94) 0 54%, transparent 56%),
+        conic-gradient(var(--accent) var(--p), rgba(255,255,255,.12) 0);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+      display: grid;
+      place-items: center;
+      color: var(--text-2);
+    }
+    .metric-ring svg { width: 17px; height: 17px; }
+    .metric-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .metric-value {
+      color: var(--text-1);
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1;
+      text-align: right;
+      word-break: keep-all;
+    }
+    .metric-label {
+      margin-top: 8px;
+      color: var(--text-4);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+    .metric-caption {
+      margin-top: 2px;
+      color: var(--text-3);
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.25;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .wind-compass {
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      color: var(--accent);
+      background:
+        linear-gradient(90deg, transparent 48%, rgba(255,255,255,.14) 49% 51%, transparent 52%),
+        linear-gradient(0deg, transparent 48%, rgba(255,255,255,.14) 49% 51%, transparent 52%),
+        rgba(255,255,255,.055);
+      border: 1px solid rgba(255,255,255,.09);
+    }
+    .wind-compass svg {
+      width: 18px;
+      height: 18px;
+      transform: rotate(var(--deg, 0deg));
+      transition: transform .5s ease;
+    }
     .details-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -467,7 +614,7 @@
       padding: 13px 14px;
       color: var(--text-1);
       outline: none;
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 600;
       transition: border-color .18s ease, background .18s ease;
     }
@@ -605,12 +752,22 @@
       .details-grid { grid-template-columns: 1fr 1fr; }
       .hero-city-btn { font-size: 30px; }
       .hero-condition { font-size: 20px; }
+      .visual-stage { grid-template-columns: 1fr; }
+      .skyline-wrap, .skyline-wrap canvas { min-height: 164px; }
     }
     @media (max-width: 390px) {
       .details-grid { grid-template-columns: 1fr; }
+      .visual-metrics { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .visual-metric { padding: 9px; }
       .daily-row { grid-template-columns: 50px 24px 32px 1fr 32px; gap: 8px; }
       .main { padding-inline: 12px; }
       .hero { padding-inline: 12px; }
+    }
+    @media (display-mode: standalone) {
+      body { min-height: 100dvh; }
+      .chrome { padding-top: calc(12px + var(--sat)); }
+      .main { padding-bottom: calc(36px + var(--sab)); }
+      .sheet { padding-bottom: calc(34px + var(--sab)); }
     }
     .safari-share-demo { display:flex; justify-content:center; padding:18px 0 8px; }
     .share-bar { display:flex; flex-direction:column; align-items:center; gap:6px; animation: slideUp 0.7s cubic-bezier(.16,1,.3,1); }
@@ -698,6 +855,72 @@
   </section>
 
   <main class="main" id="main-scroll">
+    <section class="glass-card p-4 visual-card" id="today-visual-card">
+      <div class="card-inner">
+        <div class="card-head">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16c2.5-5 5.5-7.5 9-7.5S18.5 11 20 16"></path><path d="M4 19h16M7 13h.01M12 10h.01M17 13h.01"></path></svg>
+            今日状态
+          </div>
+          <div class="card-note" id="visual-note">实时感知</div>
+        </div>
+        <div class="visual-stage">
+          <div class="skyline-wrap">
+            <canvas id="today-visual-canvas"></canvas>
+            <div class="skyline-copy">
+              <div>
+                <div class="visual-summary" id="visual-summary">正在绘制天空</div>
+                <div class="visual-sub" id="visual-sub">温度、降水、体感会在这里汇合</div>
+              </div>
+              <div class="visual-temp-badge" id="visual-temp-badge">--°</div>
+            </div>
+          </div>
+          <div class="visual-metrics">
+            <div class="visual-metric">
+              <div class="metric-top">
+                <div class="metric-ring" id="comfort-ring"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 00-5 0v11.26a4.5 4.5 0 105 0z"></path></svg></div>
+                <div class="metric-value" id="comfort-value">--</div>
+              </div>
+              <div>
+                <div class="metric-label">体感</div>
+                <div class="metric-caption" id="comfort-caption">等待数据</div>
+              </div>
+            </div>
+            <div class="visual-metric">
+              <div class="metric-top">
+                <div class="metric-ring" id="humidity-ring"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"></path></svg></div>
+                <div class="metric-value" id="humidity-value">--</div>
+              </div>
+              <div>
+                <div class="metric-label">湿度</div>
+                <div class="metric-caption" id="humidity-caption">等待数据</div>
+              </div>
+            </div>
+            <div class="visual-metric">
+              <div class="metric-top">
+                <div class="wind-compass" id="wind-compass"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l5 20-5-4-5 4 5-20z"></path></svg></div>
+                <div class="metric-value" id="wind-value">--</div>
+              </div>
+              <div>
+                <div class="metric-label">风向</div>
+                <div class="metric-caption" id="wind-caption">等待数据</div>
+              </div>
+            </div>
+            <div class="visual-metric">
+              <div class="metric-top">
+                <div class="metric-ring" id="uv-ring"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg></div>
+                <div class="metric-value" id="uv-value">--</div>
+              </div>
+              <div>
+                <div class="metric-label">紫外线</div>
+                <div class="metric-caption" id="uv-caption">等待数据</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="glass-card p-4">
       <div class="card-inner">
         <div class="card-head">
@@ -1154,6 +1377,196 @@
       if (t < mid) return interpolateColor('#3b82f6', '#fbbf24', (t - 8) / (mid - 8));
       return interpolateColor('#fbbf24', '#ef4444', (t - mid) / (35 - mid));
     }
+
+    function clamp(n, min, max) {
+      return Math.max(min, Math.min(max, n));
+    }
+
+    function num(v) {
+      const n = Number(v);
+      return Number.isFinite(n) ? n : null;
+    }
+
+    function setRing(id, value, color) {
+      const el = $(id);
+      if (!el) return;
+      el.style.setProperty('--p', `${clamp(value, 0, 100)}%`);
+      if (color) el.style.color = color;
+    }
+
+    function windDegree(dir = '') {
+      const d = String(dir).toUpperCase();
+      if (d.includes('东北') || d.includes('NE')) return 45;
+      if (d.includes('东南') || d.includes('SE')) return 135;
+      if (d.includes('西南') || d.includes('SW')) return 225;
+      if (d.includes('西北') || d.includes('NW')) return 315;
+      if (d.includes('东') || d === 'E') return 90;
+      if (d.includes('南') || d === 'S') return 180;
+      if (d.includes('西') || d === 'W') return 270;
+      return 0;
+    }
+
+    function uvProgress(category = '') {
+      const text = String(category);
+      if (!text || text === '--') return 0;
+      if (text.includes('弱') || text.includes('低')) return 24;
+      if (text.includes('中')) return 52;
+      if (text.includes('强') || text.includes('高')) return 78;
+      return 42;
+    }
+
+    function rainHint(hourly) {
+      const rainCodes = new Set(['300','301','302','303','304','305','306','307','308','309','310','311','312','313','314','315','399','400','401','402','403','404','405','406','407']);
+      const now = Date.now();
+      const next = (hourly || []).find(item => rainCodes.has(String(item.icon)) && new Date(item.fxTime).getTime() > now);
+      if (!next) return '24 小时内降水信号较弱';
+      const hours = Math.max(1, Math.round((new Date(next.fxTime).getTime() - now) / 3600000));
+      return `${hours} 小时后可能有${next.text || '降水'}`;
+    }
+
+    function comfortScore(now) {
+      const temp = num(now?.temp);
+      const feels = num(now?.feelsLike);
+      const humidity = num(now?.humidity);
+      if (temp === null && feels === null && humidity === null) return null;
+      const target = 23;
+      const baseTemp = feels ?? temp ?? target;
+      const tempPenalty = Math.abs(baseTemp - target) * 4.2;
+      const humidityPenalty = humidity === null ? 0 : Math.max(0, Math.abs(humidity - 55) - 12) * 0.6;
+      return Math.round(clamp(100 - tempPenalty - humidityPenalty, 12, 98));
+    }
+
+    function comfortLabel(score) {
+      if (score === null) return '等待数据';
+      if (score >= 82) return '很舒服';
+      if (score >= 64) return '较舒适';
+      if (score >= 45) return '略有负担';
+      return '注意防护';
+    }
+
+    function renderTodaySkyline(hourly, daily) {
+      const canvas = $('today-visual-canvas');
+      if (!canvas) return;
+      const wrap = canvas.parentElement;
+      const ctx = canvas.getContext('2d');
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const width = Math.max(wrap.clientWidth || 280, 240);
+      const height = Math.max(wrap.clientHeight || 172, 156);
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      canvas.style.width = width + 'px';
+      canvas.style.height = height + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const styles = getComputedStyle(document.body);
+      const accent = styles.getPropertyValue('--accent').trim() || '#7dd3fc';
+      const accent2 = styles.getPropertyValue('--accent-2').trim() || '#c084fc';
+      const sun = styles.getPropertyValue('--sun').trim() || '#fde68a';
+      const items = (hourly || []).slice(0, 24);
+      const temps = items.map(i => num(i.temp)).filter(v => v !== null);
+      const fallbackMin = num(daily?.[0]?.tempMin) ?? 18;
+      const fallbackMax = num(daily?.[0]?.tempMax) ?? 26;
+      const minT = temps.length ? Math.min(...temps) - 1 : fallbackMin - 1;
+      const maxT = temps.length ? Math.max(...temps) + 1 : fallbackMax + 1;
+      const range = Math.max(maxT - minT, 1);
+      const pad = 18;
+      const plotH = height - 48;
+      const rainCodes = new Set(['300','301','302','303','304','305','306','307','308','309','310','311','312','313','314','315','399','400','401','402','403','404','405','406','407']);
+
+      ctx.clearRect(0, 0, width, height);
+      const sky = ctx.createLinearGradient(0, 0, width, height);
+      sky.addColorStop(0, hexToRgba(sun, .28));
+      sky.addColorStop(.48, hexToRgba(accent, .18));
+      sky.addColorStop(1, hexToRgba(accent2, .16));
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, width, height);
+
+      const orb = ctx.createRadialGradient(width * .72, height * .22, 0, width * .72, height * .22, width * .35);
+      orb.addColorStop(0, hexToRgba(sun, .5));
+      orb.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = orb;
+      ctx.fillRect(0, 0, width, height);
+
+      const points = (items.length ? items : Array.from({ length: 8 }, (_, i) => ({
+        temp: String(fallbackMin + Math.round((fallbackMax - fallbackMin) * Math.sin((i / 7) * Math.PI)))
+      }))).map((item, i, arr) => {
+        const t = num(item.temp) ?? fallbackMin;
+        const x = pad + (i / Math.max(arr.length - 1, 1)) * (width - pad * 2);
+        const y = 18 + (1 - (t - minT) / range) * plotH;
+        return { x, y, t, rain: rainCodes.has(String(item.icon)) };
+      });
+
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+      for (let i = 0; i < points.length - 1; i += 1) {
+        const p = points[i], n = points[i + 1];
+        const c = (n.x - p.x) / 2;
+        ctx.bezierCurveTo(p.x + c, p.y, n.x - c, n.y, n.x, n.y);
+      }
+      ctx.lineTo(points[points.length - 1].x, height);
+      ctx.lineTo(points[0].x, height);
+      ctx.closePath();
+      const area = ctx.createLinearGradient(0, 20, 0, height);
+      area.addColorStop(0, 'rgba(255,255,255,.34)');
+      area.addColorStop(1, hexToRgba(accent, .04));
+      ctx.fillStyle = area;
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+      for (let i = 0; i < points.length - 1; i += 1) {
+        const p = points[i], n = points[i + 1];
+        const c = (n.x - p.x) / 2;
+        ctx.bezierCurveTo(p.x + c, p.y, n.x - c, n.y, n.x, n.y);
+      }
+      ctx.strokeStyle = 'rgba(255,255,255,.86)';
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+
+      points.forEach((p, i) => {
+        if (i % 3 !== 0 && !p.rain) return;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.rain ? 4 : 2.2, 0, Math.PI * 2);
+        ctx.fillStyle = p.rain ? 'rgba(96,165,250,.95)' : 'rgba(255,255,255,.68)';
+        ctx.fill();
+      });
+    }
+
+    function renderTodayVisual(now, hourly, daily, indices) {
+      const uv = (indices || []).find(item => String(item.type) === '5');
+      const humidity = num(now?.humidity);
+      const score = comfortScore(now);
+      const feels = now?.feelsLike || now?.temp || '--';
+      const windScale = now?.windScale || '--';
+      const windDir = now?.windDir || '--';
+      const uvCategory = uv?.category || '--';
+      const tempNow = now?.temp ? `${now.temp}°` : '--°';
+
+      $('visual-temp-badge').textContent = tempNow;
+      $('visual-summary').textContent = `${now?.text || '天气'} · ${comfortLabel(score)}`;
+      $('visual-sub').textContent = rainHint(hourly);
+      $('visual-note').textContent = daily?.[0]?.textDay || now?.text || '实时感知';
+
+      $('comfort-value').textContent = score === null ? '--' : String(score);
+      $('comfort-caption').textContent = `体感 ${feels}°`;
+      setRing('comfort-ring', score ?? 0, score !== null && score < 50 ? '#fb7185' : '');
+
+      $('humidity-value').textContent = humidity === null ? '--' : `${humidity}%`;
+      $('humidity-caption').textContent = humidity === null ? '等待数据' : (humidity > 75 ? '空气偏湿' : humidity < 35 ? '空气偏干' : '湿度适中');
+      setRing('humidity-ring', humidity ?? 0, humidity !== null && humidity > 75 ? '#60a5fa' : '');
+
+      $('wind-value').textContent = `${windScale}级`;
+      $('wind-caption').textContent = windDir;
+      $('wind-compass').style.setProperty('--deg', `${windDegree(windDir)}deg`);
+
+      $('uv-value').textContent = uvCategory;
+      $('uv-caption').textContent = uv?.text || '暂无指数';
+      setRing('uv-ring', uvProgress(uvCategory), uvProgress(uvCategory) > 70 ? '#fbbf24' : '');
+
+      renderTodaySkyline(hourly, daily);
+    }
+
     function renderDaily(list) {
       const items = list || [];
       const title = `${items.length >= 7 ? 7 : items.length} 日预报`;
@@ -1415,6 +1828,7 @@
         renderRainForecast(cachedHourly?.hourly || []);
         if (cachedDaily?.daily) renderDaily(cachedDaily.daily);
         render30dChart(cachedForecast30?.daily || []);
+        renderTodayVisual(cachedNow?.now || {}, cachedHourly?.hourly || [], cachedDaily?.daily || [], cachedIndices?.daily || []);
         renderDetails(cachedNow?.now, cachedIndices?.daily || []);
         renderAlerts(cachedWarning?.alerts || cachedWarning?.warning || []);
       }
@@ -1437,6 +1851,7 @@
         renderRainForecast(hourlyData?.hourly || []);
         renderDaily(dailyData?.daily || []);
         render30dChart(forecast30Data?.daily || []);
+        renderTodayVisual(nowData?.now || {}, hourlyData?.hourly || [], dailyData?.daily || [], indicesData?.daily || []);
         renderDetails(nowData?.now || {}, indicesData?.daily || []);
         renderAlerts(alerts);
         state.lastRefresh = Date.now();
@@ -1733,11 +2148,17 @@
       renderRainForecast(cachedHourly?.hourly || []);
       if (cachedDaily?.daily) renderDaily(cachedDaily.daily);
       render30dChart(cachedForecast30?.daily || []);
+      renderTodayVisual(cachedNow?.now || {}, cachedHourly?.hourly || [], cachedDaily?.daily || [], cachedIndices?.daily || []);
       renderDetails(cachedNow?.now || {}, cachedIndices?.daily || []);
       renderAlerts(cachedWarning?.alerts || cachedWarning?.warning || []);
       window.addEventListener('resize', () => {
         const cachedForecast30 = getCache('forecast30');
+        const cachedNow = getCache('now');
+        const cachedDaily = getCache('daily');
+        const cachedHourly = getCache('hourly');
+        const cachedIndices = getCache('indices');
         render30dChart(cachedForecast30?.daily || []);
+        renderTodayVisual(cachedNow?.now || {}, cachedHourly?.hourly || [], cachedDaily?.daily || [], cachedIndices?.daily || []);
       });
       loadWeather(false);
     }
