@@ -1,6 +1,6 @@
 # WeatherOS · Aurora Edition
 
-一个基于和风天气 API 的轻量级天气查询服务，支持实时天气、24 小时预报、7 天预报、30 天趋势、灾害预警、控制台统计等功能。
+一个基于和风天气 API 的轻量级天气查询服务，支持实时天气、24 小时预报、7 天预报、30 天趋势、灾害预警和城市搜索等功能。
 
 ## 功能特性
 
@@ -8,7 +8,6 @@
 - 📅 24 小时 / 7 天 / 30 天预报
 - ⚠️ 天气灾害预警
 - 🌍 城市搜索与定位
-- 📊 控制台统计与财务概览（JWT 认证）
 - 🔒 前端邀请码保护（支持环境变量配置）
 
 ## 界面预览
@@ -45,7 +44,7 @@ source .venv/bin/activate  # Linux/macOS
 ### 3. 安装依赖
 
 ```bash
-pip install flask pyjwt requests python-dotenv
+pip install flask requests python-dotenv
 ```
 
 ### 4. 配置环境变量
@@ -60,12 +59,8 @@ cp .env.example .env
 |--------|------|------|
 | `QW_API_HOST` | 和风天气 API 域名 | ✅ |
 | `QW_API_KEY` | 和风天气 API Key | ✅ |
-| `QW_KEY_ID` | 控制台 Key ID（用于 JWT） | ✅ |
-| `QW_PROJECT_ID` | 控制台 Project ID（用于 JWT） | ✅ |
-| `QW_PRIVATE_KEY_FILE` | Ed25519 私钥文件路径 | ✅ |
 | `INVITE_CODE` | 前端访问邀请码 | ✅ |
 | `PORT` | 服务端口（默认 8787） | ❌ |
-| `JWT_EXPIRE_SECONDS` | JWT 过期时间（默认 900） | ❌ |
 
 > **注意**：`.env` 和 `*.pem` 已加入 `.gitignore`，请勿手动提交到仓库。
 
@@ -79,7 +74,6 @@ python weatheros_backend.py
 
 - 自动读取 `.env` 中的 `INVITE_CODE` 并注入到前端页面
 - 提供 `/api/*` 天气数据代理接口
-- 支持 JWT 认证的控制台统计接口
 
 **纯静态预览模式**：
 
@@ -96,8 +90,6 @@ bash start.sh
 
 1. 前往 [和风天气控制台](https://console.qweather.com/) 注册账号
 2. 创建项目并获取 **API Key**
-3. 在「KEY 管理」中创建 **Ed25519 密钥对**，下载私钥（如 `ed25519-private.pem`）
-4. 将私钥放入项目目录，并在 `.env` 中配置 `QW_PRIVATE_KEY_FILE`
 
 ## 项目结构
 
@@ -106,7 +98,6 @@ bash start.sh
 ├── weatheros_backend.py      # Flask 后端服务（API 代理 + 页面渲染）
 ├── index-backend-proxy.html  # 前端页面（模板，由后端注入变量）
 ├── start.sh                  # 纯静态服务器启动脚本
-├── JWT-fixed.py              # JWT 调试工具（独立脚本）
 ├── .env.example              # 环境变量模板
 └── .gitignore                # Git 忽略规则
 ```
@@ -206,7 +197,6 @@ server {
 - 生产环境建议：
   - 使用 HTTPS
   - 限制 API Key 的调用 IP
-  - 定期轮换 JWT 密钥
 
 ## License
 
