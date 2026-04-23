@@ -291,94 +291,6 @@
       font-size: 11px;
       font-weight: 600;
     }
-    .quota-grid {
-      display: grid;
-      grid-template-columns: 122px 1fr;
-      gap: 14px;
-      align-items: center;
-    }
-    .quota-ring {
-      width: 122px; height: 122px;
-      border-radius: 999px;
-      position: relative;
-      display: grid;
-      place-items: center;
-      background: conic-gradient(var(--accent) var(--quota-deg, 0deg), rgba(255,255,255,.12) 0deg);
-      box-shadow: inset 0 0 24px rgba(255,255,255,.06), 0 10px 32px rgba(0,0,0,.18);
-    }
-    .quota-ring::before {
-      content: '';
-      position: absolute;
-      inset: 9px;
-      border-radius: inherit;
-      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.18), rgba(7,12,22,.92) 62%);
-      border: 1px solid rgba(255,255,255,.08);
-    }
-    .quota-ring-content { position: relative; text-align: center; }
-    .quota-ring-label {
-      font-size: 11px;
-      color: var(--text-4);
-      font-weight: 700;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-    }
-    .quota-ring-value {
-      font-size: 30px;
-      font-weight: 800;
-      line-height: 1.05;
-      margin-top: 4px;
-    }
-    .quota-ring-sub {
-      margin-top: 4px;
-      font-size: 11px;
-      color: var(--text-3);
-      font-weight: 700;
-    }
-    .quota-stats {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-    }
-    .stat-tile {
-      padding: 12px 14px;
-      border-radius: 18px;
-      background: rgba(255,255,255,.045);
-      border: 1px solid rgba(255,255,255,.06);
-      min-height: 76px;
-    }
-    .stat-kicker {
-      color: var(--text-4);
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-    }
-    .stat-value {
-      margin-top: 8px;
-      font-size: 24px;
-      font-weight: 800;
-      line-height: 1;
-    }
-    .stat-value.small { font-size: 18px; }
-    .stat-sub {
-      margin-top: 8px;
-      color: var(--text-3);
-      font-size: 12px;
-      line-height: 1.3;
-      font-weight: 600;
-    }
-    .warning-mini {
-      margin-top: 12px;
-      border-radius: 16px;
-      padding: 12px 14px;
-      background: rgba(255,255,255,.05);
-      border: 1px solid rgba(255,255,255,.08);
-      color: var(--text-2);
-      font-size: 12px;
-      line-height: 1.45;
-      font-weight: 600;
-    }
-    .warning-mini strong { color: var(--text-1); }
     .hour-wrap {
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
@@ -690,12 +602,9 @@
     .spin { animation: spin 1s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
     @media (max-width: 540px) {
-      .quota-grid { grid-template-columns: 1fr; }
-      .quota-ring { margin-inline: auto; }
       .details-grid { grid-template-columns: 1fr 1fr; }
       .hero-city-btn { font-size: 30px; }
       .hero-condition { font-size: 20px; }
-      .stat-value { font-size: 22px; }
     }
     @media (max-width: 390px) {
       .details-grid { grid-template-columns: 1fr; }
@@ -851,53 +760,6 @@
       </div>
     </section>
 
-    <section class="glass-card p-4">
-      <div class="card-inner">
-        <div class="card-head">
-          <div class="card-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v6m0 0l3-3m-3 3L9 6M21 12h-6m0 0l3 3m-3-3l3-3M12 21v-6m0 0l-3 3m3-3l3 3M3 12h6m0 0l-3-3m3 3l-3 3"></path></svg>
-            用量与额度
-          </div>
-          <div class="card-note" id="quota-note">等待官方统计</div>
-        </div>
-        <div class="quota-grid">
-          <div class="quota-ring" id="quota-ring" style="--quota-deg:0deg;">
-            <div class="quota-ring-content">
-              <div class="quota-ring-label">月度提醒</div>
-              <div class="quota-ring-value" id="quota-ring-value">--</div>
-              <div class="quota-ring-sub" id="quota-ring-sub">等待数据</div>
-            </div>
-          </div>
-          <div>
-            <div class="quota-stats">
-              <div class="stat-tile">
-                <div class="stat-kicker">近 24h 调用</div>
-                <div class="stat-value" id="stat-24h">--</div>
-                <div class="stat-sub" id="stat-24h-sub">--</div>
-              </div>
-              <div class="stat-tile">
-                <div class="stat-kicker">月限额</div>
-                <div class="stat-value" id="stat-limit">50,000</div>
-                <div class="stat-sub">固定提醒阈值</div>
-              </div>
-              <div class="stat-tile">
-                <div class="stat-kicker">按近 24h 推算</div>
-                <div class="stat-value" id="stat-projected">--</div>
-                <div class="stat-sub" id="stat-projected-sub">趋势提醒，非官方月累计</div>
-              </div>
-              <div class="stat-tile">
-                <div class="stat-kicker">本月应计费</div>
-                <div class="stat-value small" id="stat-charge">--</div>
-                <div class="stat-sub" id="stat-charge-sub">--</div>
-              </div>
-            </div>
-            <div class="warning-mini" id="quota-warning">
-              <strong>说明：</strong> 官方仅提供近 24 小时真实流量，月度数据未公开。此处为趋势估算，仅供参考。
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
   </main>
 
   <div class="sheet-overlay" id="city-sheet">
@@ -919,9 +781,8 @@
   <script>
     const LS_PREFIX = 'weatheros_aurora_';
     const INVITE_CODE = '__INVITE_CODE__';
-    const MONTH_LIMIT = 50000;
     const DEFAULT_CITY = { name: '北京', lat: '39.9042', lon: '116.4074', id: '101010100' };
-    const CACHE_TTLS = { now: 8 * 60 * 1000, hourly: 25 * 60 * 1000, daily: 60 * 60 * 1000, forecast30: 60 * 60 * 1000, indices: 6 * 60 * 60 * 1000, warning: 12 * 60 * 1000, metrics: 20 * 60 * 1000, finance: 60 * 60 * 1000 };
+    const CACHE_TTLS = { now: 8 * 60 * 1000, hourly: 25 * 60 * 1000, daily: 60 * 60 * 1000, forecast30: 60 * 60 * 1000, indices: 6 * 60 * 60 * 1000, warning: 12 * 60 * 1000 };
     const AUTO_REFRESH_MS = 5 * 60 * 1000;
     const NIGHT_REFRESH_MS = 15 * 60 * 1000;
 
@@ -939,8 +800,6 @@
       pullStartY: 0,
       pulling: false,
       pullTriggered: false,
-      latestMetrics: null,
-      latestFinance: null,
       latestPayload: null
     };
 
@@ -994,10 +853,6 @@
 
     function openSheet(id) { $(id).classList.add('open'); }
     function closeSheet(id) { $(id).classList.remove('open'); }
-
-    function logRequest(name, status, ms) {
-      // request logging removed for clean UI
-    }
 
     function escapeHtml(str) {
       return String(str).replace(/[&<>"']/g, s => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[s]));
@@ -1081,13 +936,11 @@
       Object.entries(query).forEach(([k, v]) => {
         if (v !== undefined && v !== null && v !== '') url.searchParams.set(k, v);
       });
-      const start = performance.now();
       try {
         const res = await fetch(url.toString(), { headers: { 'Accept': 'application/json' }, signal });
         const text = await res.text();
         let data = {};
         try { data = text ? JSON.parse(text) : {}; } catch { data = { raw: text }; }
-        logRequest(name, res.status, Math.round(performance.now() - start));
         if (!res.ok) {
           throw Object.assign(new Error(data?.error || data?.message || data?.code || '请求失败'), { status: res.status, payload: data });
         }
@@ -1095,7 +948,6 @@
         return data;
       } catch (err) {
         if (err.name === 'AbortError') throw err;
-        logRequest(name, err.status || 0, Math.round(performance.now() - start));
         throw err;
       }
     }
@@ -1116,19 +968,6 @@
             const max = min + 8 + Math.round(Math.cos(i / 3) * 2);
             return { fxDate: d.toISOString().slice(0, 10), tempMin: String(min), tempMax: String(max), iconDay: i === 2 ? '305' : '100', textDay: i === 2 ? '小雨' : '晴' };
           });
-          const stats = {
-            asOf: new Date(now.getTime() - 65 * 60_000).toISOString(),
-            success: [
-              { api: 'Weather', hours: Array.from({ length: 24 }, (_, i) => 70 + (i % 4) * 9) },
-              { api: 'Geo', hours: Array.from({ length: 24 }, (_, i) => i < 18 ? 4 + (i % 3) : 12) },
-              { api: 'WeatherIndices', hours: Array.from({ length: 24 }, () => 4) },
-              { api: 'WeatherAlert', hours: Array.from({ length: 24 }, () => 5) }
-            ],
-            errors: [
-              { api: 'Weather', hours: Array.from({ length: 24 }, (_, i) => i % 11 === 0 ? 1 : 0) }
-            ]
-          };
-          const finance = { asOf: now.toISOString(), accruedCharges: { thisMonth: 0 } };
           const dataMap = {
             '/v7/weather/now': { code: '200', now: { temp: '24', feelsLike: '26', text: '晴朗', icon: '100', humidity: '45', windDir: '东南', windScale: '2', vis: '13', pressure: '1014', obsTime: now.toISOString() } },
             '/v7/weather/24h': { code: '200', hourly },
@@ -1152,8 +991,6 @@
               { type: '15', name: '交通指数', category: '良好', text: '通行条件平稳。' }
             ] },
             '/weatheralert/v1/current/39.90/116.41': { metadata: {}, alerts: [] },
-            '/metrics/v1/stats': stats,
-            '/finance/v1/summary': finance,
             '/geo/v2/city/top': { code: '200', topCityList: [
               { name: '北京', adm1: '北京市', adm2: '北京市', country: '中国', lat: '39.9042', lon: '116.4074', id: '101010100' },
               { name: '上海', adm1: '上海市', adm2: '上海市', country: '中国', lat: '31.2304', lon: '121.4737', id: '101020100' },
@@ -1171,60 +1008,6 @@
           resolve(dataMap[key] || dataMap[path] || { code: '200' });
         }, 220);
       });
-    }
-
-    function totalTraffic(metrics) {
-      if (!metrics) return null;
-      const sumArr = (arr) => (arr || []).reduce((acc, item) => acc + (item.hours || []).reduce((a, b) => a + Number(b || 0), 0), 0);
-      return { success: sumArr(metrics.success), errors: sumArr(metrics.errors) };
-    }
-
-    function renderUsage(metrics, finance) {
-      state.latestMetrics = metrics || null;
-      state.latestFinance = finance || null;
-      const t = totalTraffic(metrics);
-      if (!t) {
-        $('stat-24h').textContent = '--';
-        $('stat-24h-sub').textContent = '--';
-        $('stat-projected').textContent = '--';
-        $('stat-projected-sub').textContent = '暂无数据';
-        $('quota-ring').style.setProperty('--quota-deg', '0deg');
-        $('quota-ring-value').textContent = '--';
-        $('quota-ring-sub').textContent = '等待数据';
-        $('quota-note').textContent = '未连接';
-      } else {
-        const total = t.success + t.errors;
-        const projected = Math.round(total * 30);
-        const ratio = Math.min(projected / MONTH_LIMIT, 1);
-        $('stat-24h').textContent = total.toLocaleString();
-        $('stat-24h-sub').textContent = `成功 ${t.success.toLocaleString()} · 错误 ${t.errors.toLocaleString()}`;
-        $('stat-projected').textContent = projected.toLocaleString();
-        $('stat-projected-sub').textContent = metrics?.asOf ? `统计截至 ${new Date(metrics.asOf).toLocaleString([], { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}` : '基于近 24h 流量推算';
-        $('quota-ring').style.setProperty('--quota-deg', `${Math.round(ratio * 360)}deg`);
-        $('quota-ring-value').textContent = `${Math.round(ratio * 100)}%`;
-        $('quota-ring-sub').textContent = projected >= MONTH_LIMIT ? '按当前节奏会撞线' : '按当前节奏仍安全';
-        $('quota-note').textContent = '官方 24h 统计';
-      }
-
-      const monthCharge = finance?.accruedCharges?.thisMonth;
-      if (Number.isFinite(Number(monthCharge))) {
-        $('stat-charge').textContent = Number(monthCharge).toFixed(2);
-        $('stat-charge-sub').textContent = finance.asOf ? `截至 ${new Date(finance.asOf).toLocaleString([], { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}` : '当前';
-      } else {
-        $('stat-charge').textContent = '--';
-        $('stat-charge-sub').textContent = '暂无数据';
-      }
-
-      const hasCharge = Number(monthCharge) > 0;
-      const projected = t ? Math.round((t.success + t.errors) * 30) : null;
-      const warn = hasCharge
-        ? '本月已产生费用，请注意额度使用。'
-        : projected && projected >= MONTH_LIMIT * 0.9
-          ? `按最近 24 小时推算，本月约 ${projected.toLocaleString()} 次，已逼近 50,000 次提醒线。`
-          : projected
-            ? `按最近 24 小时推算，本月约 ${projected.toLocaleString()} 次。`
-            : '暂无月度统计数据，仅显示近 24 小时趋势。';
-      $('quota-warning').innerHTML = `<strong>提醒：</strong>${escapeHtml(warn)}`;
     }
 
     function renderHero(now, daily) {
@@ -1616,18 +1399,6 @@
       }).join('');
     }
 
-    async function loadMetrics(force = false) {
-      const cachedMetrics = !force ? getCache('metrics') : null;
-      const cachedFinance = !force ? getCache('finance') : null;
-      if (cachedMetrics || cachedFinance) renderUsage(cachedMetrics, cachedFinance);
-      const metricsPromise = qFetch('/console/stats', { name: 'Console Stats', cacheName: 'metrics' }).catch(err => err);
-      const financePromise = qFetch('/console/finance', { name: 'Finance Summary', cacheName: 'finance' }).catch(err => err);
-      const [metricsRes, financeRes] = await Promise.all([metricsPromise, financePromise]);
-      const metrics = metricsRes instanceof Error ? cachedMetrics : metricsRes;
-      const finance = financeRes instanceof Error ? cachedFinance : financeRes;
-      renderUsage(metrics, finance);
-    }
-
     async function loadWeather(force = false) {
       if (state.loading) return;
       state.loading = true;
@@ -1677,7 +1448,6 @@
         showToast('天气更新失败，请稍后重试');
       } finally {
         state.loading = false;
-        loadMetrics(force).catch(() => {});
       }
     }
 
@@ -1958,8 +1728,6 @@
       const cachedForecast30 = getCache('forecast30');
       const cachedIndices = getCache('indices');
       const cachedWarning = getCache('warning');
-      const cachedMetrics = getCache('metrics');
-      const cachedFinance = getCache('finance');
       renderHero(cachedNow?.now || {}, cachedDaily?.daily || []);
       if (cachedHourly?.hourly) renderHourly(cachedHourly.hourly);
       renderRainForecast(cachedHourly?.hourly || []);
@@ -1967,7 +1735,6 @@
       render30dChart(cachedForecast30?.daily || []);
       renderDetails(cachedNow?.now || {}, cachedIndices?.daily || []);
       renderAlerts(cachedWarning?.alerts || cachedWarning?.warning || []);
-      renderUsage(cachedMetrics, cachedFinance);
       window.addEventListener('resize', () => {
         const cachedForecast30 = getCache('forecast30');
         render30dChart(cachedForecast30?.daily || []);
