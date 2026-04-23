@@ -120,4 +120,4 @@ def handle_error(err):
 
 if __name__ == '__main__':
     print(f'WeatherOS backend running on http://127.0.0.1:{PORT}')
-    app.run(host='0.0.0.0', port=PORT, debug=True)
+    app.run(host='0.0.0.0', port=PORT, debug=False)
